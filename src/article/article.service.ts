@@ -1,15 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UserEntity } from '../user/user.entity';
-import { CreateArticleDto } from './dto/createArticle.dto';
-import { ArticleEntity } from './article.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
-import { ArticleResponseInterface } from './types/articleResponse.interface';
 import slugify from 'slugify';
+import { DeleteResult, Repository } from 'typeorm';
+import { UserEntity } from '../user/user.entity';
+import { ArticleEntity } from './article.entity';
+import { CreateArticleDto } from './dto/createArticle.dto';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
-import { ArticlesResponseInterface } from './types/articlesResponseInterface';
-import { ArticleType } from './types/article.type';
 import { FollowEntity } from './follow.entity';
+import { ArticleType } from './types/article.type';
+import { ArticleResponseInterface } from './types/articleResponse.interface';
+import { ArticlesResponseInterface } from './types/articlesResponseInterface';
 
 @Injectable()
 export class ArticleService {
@@ -44,10 +44,20 @@ export class ArticleService {
       });
     }
 
+    if (query.title) {
+      articlesFromServer.andWhere('articles.title LIKE :title', {
+        title: `%${query.title}%`,
+      });
+    }
+
     if (query.author) {
       const author = await this.userRepository.findOneBy({
         username: query.author,
       });
+      if (!author) {
+        throw new HttpException('Article does not exist', HttpStatus.NOT_FOUND);
+      }
+
       articlesFromServer.andWhere('articles.authorId = :id', {
         id: author.id,
       });

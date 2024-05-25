@@ -16,13 +16,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "npm run build && npx typeorm -d dist/db/data-source.js",
-    "seed:run": "typeorm-ts-node-esm -d dist/db/data-sourceSeeds.js migration:run",
-    "migration:generate": "typeorm-ts-node-esm -d db/data-source.ts migration:generate",
-    "migration:create": "typeorm migration:create",
-    "migration:run": "npm run typeorm -- migration:run && npm run seed:run",
-    "migration:revert": "npm run typeorm -- migration:revert",
-    "migration:drop": "npm run typeorm -- schema:drop"
+    "typeorm": "typeorm-ts-node-commonjs -d ./db/data-source.ts",
+    "migration:create": "npm run typeorm migration:create",
+    "migration:generate": "npm run typeorm migration:generate",
+    "migration:run": "npm run typeorm migration:run",
+    "migration:revert": "npm run typeorm migration:revert",
+    "migration:drop": "npm run typeorm migration:drop"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
